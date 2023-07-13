@@ -36,7 +36,7 @@ namespace PraticaEF_2.Data.Mapping
                 .IsUnique();
 
             // Relacionamentos
-            // um Author pode ter muitos Posts
+            // um Author pode ter muitos Posts (uma para muitos)
             builder.HasOne(x => x.Author)
                 .WithMany(x => x.Posts)
                 .HasConstraintName("FK_Post_Author");
@@ -44,6 +44,22 @@ namespace PraticaEF_2.Data.Mapping
             builder.HasOne(x => x.Category)
                 .WithMany(x => x.Posts)
                 .HasConstraintName("FK_Post_Category");
+
+            // um Post pode ter muitas Tags e vice versa (muitos para muitos)
+            builder.HasMany(x => x.Tags)
+                .WithMany(x => x.Posts)
+                .UsingEntity<Dictionary<string, object>>(
+                    "PostTag",
+                    post => post.HasOne<Tag>()
+                        .WithMany()
+                        .HasForeignKey("PostId")
+                        .HasConstraintName("FK_PostTag_PostId")
+                        .OnDelete(DeleteBehavior.Cascade),
+                    tag => tag.HasOne<Post>()
+                        .WithMany()
+                        .HasForeignKey("TagId")
+                        .HasConstraintName("FK_PostTag_TagId")
+                        .OnDelete(DeleteBehavior.Cascade));
 
         }
     }
