@@ -1,4 +1,7 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using PraticaEF_2.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +9,42 @@ using System.Threading.Tasks;
 
 namespace PraticaEF_2.Data.Mapping
 {
-    internal class PostMap
+    internal class PostMap : IEntityTypeConfiguration<Post>
     {
+        public void Configure(EntityTypeBuilder<Post> builder)
+        {
+            // Tabela
+            builder.ToTable("Post");
+
+            // Chave Primária
+            builder.HasKey(x => x.Id);
+
+            // Identity
+            builder.Property(x => x.Id)
+                .ValueGeneratedOnAdd()
+                .UseIdentityColumn();
+
+            // Propriedades Name e Slug
+            builder.Property(x => x.LastUpdateDate)
+                .IsRequired()
+                .HasColumnName("LastUpdateDate")
+                .HasColumnType("SMALLDATETIME")
+                .HasDefaultValue(DateTime.Now.ToUniversalTime());
+
+            // Indices
+            builder.HasIndex(x => x.Slug, "IX_Post_Slug")
+                .IsUnique();
+
+            // Relacionamentos
+            // um Author pode ter muitos Posts
+            builder.HasOne(x => x.Author)
+                .WithMany(x => x.Posts)
+                .HasConstraintName("FK_Post_Author");
+
+            builder.HasOne(x => x.Category)
+                .WithMany(x => x.Posts)
+                .HasConstraintName("FK_Post_Category");
+
+        }
     }
 }
