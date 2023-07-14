@@ -50,7 +50,8 @@ namespace PraticaEF_2.Data.Mapping
                 .WithMany(x => x.Posts)
                 .UsingEntity<Dictionary<string, object>>(
                     "PostTag",
-                    post => post.HasOne<Tag>()
+                    post => post
+                        .HasOne<Tag>()
                         .WithMany()
                         .HasForeignKey("PostId")
                         .HasConstraintName("FK_PostTag_PostId")
